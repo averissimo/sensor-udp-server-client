@@ -20,8 +20,8 @@ services:
     container_name: python
     ports:
       - '20001:20001/udp'
-    links:
-      - influx
+#    links:
+#      - influx
     volumes:
       - "./server/server.py:/usr/src/app/server.py"
     environment:
