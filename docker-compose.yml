@@ -1,0 +1,32 @@
+version: "3.7"
+
+services:
+#
+#  Used only for testing
+#
+#  influx:
+#    container_name: influxdb
+#    image: influxdb:latest
+#    ports:
+#      - '8086:8086'
+#      - '8083:8083'
+#    volumes:
+#      - './influxdb:/var/lib/influxdb'
+#    environment:
+#      - INFLUXDB_DB=testDB
+
+  python:
+    build: .
+    container_name: python
+    ports:
+      - '20001:20001/udp'
+    links:
+      - influx
+    volumes:
+      - "./server/server.py:/usr/src/app/server.py"
+    environment:
+      DATABASE_HOST: influxdb
+      DATABASE_PORT: 8086
+      DATABASE_TABLE: rpi
+      #DATABASE_USER: root
+      #DATABASE_PASSWD: root
