@@ -16,7 +16,9 @@ services:
 #      - INFLUXDB_DB=testDB
 
   python:
-    build: .
+    build:
+      context: .
+      network: host
     container_name: python
     ports:
       - '20001:20001/udp'
