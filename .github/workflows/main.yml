@@ -38,10 +38,8 @@ jobs:
         docker buildx build \
           --progress=plain \
           --pull \
-          --build-arg GRAFANA_VERSION=master \
-          --build-arg GF_INSTALL_PLUGINS=grafana-clock-panel,briangann-gauge-panel,natel-plotly-panel,grafana-simple-json-datasource \
           --platform  linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 \
           --output "type=image,push=true" \
-          --tag betashil/sensor-udp-server-client :latest \
+          --tag betashil/sensor-udp-server-client:latest \
           --file Dockerfile .
 
