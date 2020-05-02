@@ -1,0 +1,47 @@
+on:
+  push:
+  schedule:
+    - cron: '33 9 * * 1/3'
+
+jobs: 
+  build_docker:
+    runs-on: ubuntu-latest
+    name: Build/Push Docker
+    steps:
+    - name: Checkout current repo
+      uses: actions/checkout@v2
+      with:
+        path: repo
+    - name: verbose
+      run: |
+        docker -v
+        export DOCKER_CLI_EXPERIMENTAL=enabled
+    - name: Set up Docker Buildx
+      id: buildx
+      uses: crazy-max/ghaction-docker-buildx@v1
+      with:
+        version: latest
+    - name: Available platforms
+      run: echo ${{ steps.buildx.outputs.platforms }}
+    - name: Docker login
+      run: |
+        echo "${{ secrets.HUB_PASS }}" | docker login --username "${{ secrets.HUB_USER }}" --password-stdin
+    - name: Build
+      run: |
+        cd repo
+        ls
+
+        docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+
+        docker buildx create --use --driver docker-container
+
+        docker buildx build \
+          --progress=plain \
+          --pull \
+          --build-arg GRAFANA_VERSION=master \
+          --build-arg GF_INSTALL_PLUGINS=grafana-clock-panel,briangann-gauge-panel,natel-plotly-panel,grafana-simple-json-datasource \
+          --platform  linux/amd64,linux/arm64,linux/arm/v7,linux/arm/v6 \
+          --output "type=image,push=true" \
+          --tag betashil/sensor-udp-server-client :latest \
+          --file Dockerfile .
+
